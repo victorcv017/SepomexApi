@@ -4,12 +4,14 @@ import { HomeComponent } from './home/home.component';
 import { ContentComponent } from './content/content.component';
 import { FunctionalRoutingModule } from './functional-routing.module';
 import { SharedModule } from '../shared/shared.module';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
     CommonModule, 
     FunctionalRoutingModule,
-    SharedModule
+    SharedModule,
+    HttpClientModule,
   ],
   exports:[
     FunctionalRoutingModule,

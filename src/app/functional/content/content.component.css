@@ -1,0 +1,8 @@
+.cp-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-container > * {
+  width: 100%;
+}

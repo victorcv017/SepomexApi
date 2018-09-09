@@ -1,3 +1,27 @@
-<p>
-  content works!
-</p>
+<h3>Rellena algunos campos para comenzar la búsqueda</h3>
+<div class="cp-container">
+  <mat-form-field>
+    <mat-select placeholder="Estado">
+      <mat-option value="{{state.id}}" *ngFor="let state of (states | async)">{{state.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-select placeholder="Ciudad">
+      <mat-option value="{{city.id}}" *ngFor="let city of (cities | async)">{{city.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-select placeholder="Colonia">
+      <mat-option value="{{mu.id}}" *ngFor="let mu of (mun | async)">{{mu.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <input matInput placeholder="Código Postal">
+  </mat-form-field>
+  
+  <button mat-stroked-button color="primary">Buscar</button>
+</div>
+
