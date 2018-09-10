@@ -1,62 +1,97 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, throwError  } from 'rxjs';
-import { catchError, retry , map } from 'rxjs/operators';
+import { SepomexService } from '../../services/sepomex.service';
+import { FormControl, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-content',
   templateUrl: './content.component.html',
-  styleUrls: ['./content.component.css']
+  styleUrls: ['./content.component.css'],
+  providers : [SepomexService]
 })
 
-
-
-
-
 export class ContentComponent implements OnInit {
-  
-  stateUrl: string = "http://sepomex.icalialabs.com/api/v1/states";
-  cityUrl: string = "http://sepomex.icalialabs.com/api/v1/cities";
-  munUrl: string = "http://sepomex.icalialabs.com/api/v1/municipalities";
-  url: string = "http://sepomex.icalialabs.com/api/v1/zip_codes";
-  public states : any;
-  public cities : any;
-  public mun : any;
 
-  constructor(private http : HttpClient) {
+  fcselect = new FormControl('', [Validators.required]);
+
+  public hideRequired : boolean;
+  public states : any;
+  public municipalities : any;
+  public state : any;
+  public municipality : any;
+  public data : any;
+  public val : string;
+  displayedColumns: string[] = ['d_codigo', 'd_tipo_asenta', 'd_estado', 'd_ciudad', 'd_mnpio'];
+
+  constructor(private _sepomexService : SepomexService) {
     
   }
-
   ngOnInit() {
-    this.states = this.getState();
-    this.cities = this.getCity();
-    this.mun = this.getMun();
+    this.hideRequired = false;
+    this._sepomexService.getStates().subscribe(
+      result => {
+        this.states = result.states;
+        console.log(result.states);
+      },
+      error => {
+        console.log(<any>error);
+      }
+    );
   }
 
-  getState(term: string = ''){
-    const options = term ? { params: new HttpParams().set('name', term) } : {};
-    console.log(term ? "si" : "no");
-    return this.http.get(this.stateUrl, options).pipe(map(res => {
-      console.log("estates " ,res.states);
-      return res.states;
-    }));
+  updateMunicipality(state){
+    var aux = state.split(',');
+    this._sepomexService.getMunicipality(aux[0]).subscribe(
+      result => {
+        this.municipalities = result.municipalities;
+        console.log(result.municipalities);
+      },
+      error => {
+        console.log(<any>error);
+      }
+    );
   }
 
-  getCity(term: string = '') {
-    const options = term ? { params: new HttpParams().set('name', term) } : {};
-    console.log(term ? "si" : "no");
-    return this.http.get(this.cityUrl, options).pipe(map(res => {
-      console.log("cities ",res.cities);
-      return res.cities;
-    }));
+  getData(state , municipality , zip_code){
+    if(this.hideRequired && zip_code ){
+      console.log(zip_code);
+      this._sepomexService.getZipCode(zip_code).subscribe(
+        result => {
+          this.data = result.zip_codes;
+          console.log(result.zip_codes);
+        },
+        error => {
+          console.log(<any>error);
+        }
+      )
+    }else {
+      var auxstate = state.split(','), auxmun = municipality.split(',');
+      console.log(auxstate,auxmun,state.trim(),municipality)
+      this._sepomexService.getData(auxstate[1],auxmun[1]).subscribe(
+        result =>{
+          this.data = result.zip_codes;
+          console.log(result.zip_codes);
+        },
+        error =>{
+          console.log(<any>error);
+        }
+      )
+    }
+    
+  }
+  getErrorMessage() {
+    if(!this.hideRequired)
+    return this.fcselect.hasError('required') ? 'Debes Seleccionar Un Campo' : '';
   }
 
-  getMun(term: string = '') {
-    const options = term ? { params: new HttpParams().set('name', term) } : {};
-    console.log(term ? "si" : "no");
-    return this.http.get(this.munUrl, options).pipe(map(res => {
-      console.log("muns " ,res.municipalities);
-      return res.municipalities;
-    }));
+  hide(value : string){
+    if(value.length == 0) this.hideRequired = false;
+    else this.hideRequired = true;
+  }
+
+  clean(){
+    this.municipalities = [];
+    this.hideRequired = false;
+    this.data = undefined;
+    this.val = '';
   }
 }

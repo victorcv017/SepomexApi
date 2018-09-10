@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MenuComponent } from './menu/menu.component';
 import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule, MatSidenavModule, MatIconModule, MatListModule, MatInputModule, MatOptionModule, MatSelectModule} from '@angular/material';
+import { MatToolbarModule, MatSidenavModule, MatIconModule, MatListModule, MatInputModule, MatOptionModule, MatSelectModule,  MatTableModule} from '@angular/material';
 import { FooterComponent } from './footer/footer.component';
 import { RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button'
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -21,7 +22,9 @@ import { MatButtonModule } from '@angular/material/button'
     MatIconModule,
     MatListModule,
     MatIconModule,
-    RouterModule
+    MatTableModule,
+    RouterModule,
+    FormsModule
   ],
   exports:[
     MenuComponent,
@@ -30,7 +33,9 @@ import { MatButtonModule } from '@angular/material/button'
     MatInputModule,
     MatOptionModule,
     MatSelectModule,
-    MatButtonModule
+    MatButtonModule,
+    MatTableModule,
+    FormsModule
   ],
   declarations: [MenuComponent, FooterComponent]
 })
