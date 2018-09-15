@@ -1,53 +1,69 @@
-<h3>Rellena algunos campos para comenzar la búsqueda</h3>
-<div class="cp-container">
-  <mat-form-field [hideRequiredMarker]="hideRequired">
-    <mat-select placeholder="Estado" [(ngModel)]="state" (ngModelChange)="updateMunicipality(state)" required>
-      <mat-option value="{{state.id}},{{state.name}}" *ngFor="let state of states">{{state.name}}</mat-option>
-    </mat-select>
-    <mat-error *ngIf="fcselect.invalid">{{getErrorMessage()}}</mat-error>
-  </mat-form-field>
+<mat-grid-list cols="2" rowHeight="250px">
+  <mat-grid-tile [colspan]="1" [rowspan]="2">
+    <mat-grid-tile-header><h4>Rellena los campos para comenzar</h4></mat-grid-tile-header>
+    <div class="cp-container">
+      <mat-form-field [hideRequiredMarker]="hideRequired">
+        <mat-select placeholder="Estado" [(ngModel)]="state" (ngModelChange)="updateMunicipality(state)" required>
+          <mat-option value="{{state.id}},{{state.name}}" *ngFor="let state of states">{{state.name}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="fcselect.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+    
+      <mat-form-field [hideRequiredMarker]="hideRequired">
+        <mat-select placeholder="Municipio" [(ngModel)]="municipality" required>
+          <mat-option value="{{municipality.id}},{{municipality.name}}" *ngFor="let municipality of municipalities">{{municipality.name}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="fcselect.invalid">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+    
+      <mat-form-field (blur)="hide(box.value)" (keyup)="hide(box.value)">
+        <input #box matInput placeholder="Código Postal" [(ngModel)]="val">
+      </mat-form-field>
+    
+      <button mat-stroked-button color="primary" (click)="getData(state,municipality,box.value)">Buscar</button><br>
+      <button mat-stroked-button color="primary" (click)="clean()">Limpiar</button>
+      Los campos marcados con un * son requeridos.
+    </div>
+  </mat-grid-tile>
+  <mat-grid-tile [colspan]="1" [rowspan]="2">
+    <mat-grid-tile-header>
+      <h4 [hidden]="data">Resultados</h4>
+    </mat-grid-tile-header>
+    <div [hidden] = "data">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 data-table" flex matSort>
+        <ng-container matColumnDef="d_codigo">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Código Postal</th>
+          <td mat-cell *matCellDef="let element"> {{element.d_codigo}} </td>
+        </ng-container>
 
-  <mat-form-field [hideRequiredMarker]="hideRequired">
-    <mat-select placeholder="Municipio" [(ngModel)]="municipality" required>
-      <mat-option value="{{municipality.id}},{{municipality.name}}" *ngFor="let municipality of municipalities">{{municipality.name}}</mat-option>
-    </mat-select>
-    <mat-error *ngIf="fcselect.invalid">{{getErrorMessage()}}</mat-error>
-  </mat-form-field>
+        <ng-container matColumnDef="d_tipo_asenta">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo de Asentamiento</th>
+          <td mat-cell *matCellDef="let element"> {{element.d_tipo_asenta}} </td>
+        </ng-container>
 
-  <mat-form-field (blur)="hide(box.value)" (keyup)="hide(box.value)">
-    <input #box matInput placeholder="Código Postal" [(ngModel)]="val">
-  </mat-form-field>
-  
-  <button mat-stroked-button color="primary" (click)="getData(state,municipality,box.value)">Buscar</button><br>
-  <button mat-stroked-button color="primary" (click)="clean()" >Limpiar</button>
-  Los campos marcados con un * son requeridos.
-</div>
+        <ng-container matColumnDef="d_estado">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado</th>
+          <td mat-cell *matCellDef="let element"> {{element.d_estado}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="d_ciudad">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Ciudad </th>
+          <td mat-cell *matCellDef="let element"> {{element.d_ciudad}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="d_mnpio">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Municipio </th>
+          <td mat-cell *matCellDef="let element"> {{element.d_mnpio}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator  [pageSize]="5"></mat-paginator>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>
 
 
 
-<div *ngIf="data">
-  <table mat-table [dataSource]="data" class="mat-elevation-z8" flex>
-    <ng-container matColumnDef="d_codigo">
-      <th mat-header-cell *matHeaderCellDef> Código Postal</th>
-      <td mat-cell *matCellDef="let element"> {{element.d_codigo}} </td>
-    </ng-container>
-    <ng-container matColumnDef="d_tipo_asenta">
-      <th mat-header-cell *matHeaderCellDef> Tipo de Asentamiento</th>
-      <td mat-cell *matCellDef="let element"> {{element.d_tipo_asenta}} </td>
-    </ng-container>
-    <ng-container matColumnDef="d_estado">
-      <th mat-header-cell *matHeaderCellDef> Estado</th>
-      <td mat-cell *matCellDef="let element"> {{element.d_estado}} </td>
-    </ng-container>
-    <ng-container matColumnDef="d_ciudad">
-      <th mat-header-cell *matHeaderCellDef> Ciudad </th>
-      <td mat-cell *matCellDef="let element"> {{element.d_ciudad}} </td>
-    </ng-container>
-    <ng-container matColumnDef="d_mnpio">
-      <th mat-header-cell *matHeaderCellDef> Municipio </th>
-      <td mat-cell *matCellDef="let element"> {{element.d_mnpio}} </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-  </table>
-</div>
+

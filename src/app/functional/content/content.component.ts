@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SepomexService } from '../../services/sepomex.service';
 import { FormControl, Validators } from '@angular/forms';
+import { MatPaginator, MatTableDataSource } from '@angular/material';
 
 @Component({
   selector: 'app-content',
@@ -18,11 +19,18 @@ export class ContentComponent implements OnInit {
   public municipalities : any;
   public state : any;
   public municipality : any;
-  public data : any;
+  public data : boolean = true;
   public val : string;
   displayedColumns: string[] = ['d_codigo', 'd_tipo_asenta', 'd_estado', 'd_ciudad', 'd_mnpio'];
 
+  dataSource: MatTableDataSource<object[]>;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+
+
   constructor(private _sepomexService : SepomexService) {
+    
+    this.dataSource = new MatTableDataSource();
+    console.log(this.dataSource);
     
   }
   ngOnInit() {
@@ -30,13 +38,14 @@ export class ContentComponent implements OnInit {
     this._sepomexService.getStates().subscribe(
       result => {
         this.states = result.states;
-        console.log(result.states);
+        console.log(result);
       },
       error => {
         console.log(<any>error);
       }
     );
   }
+
 
   updateMunicipality(state){
     var aux = state.split(',');
@@ -56,8 +65,10 @@ export class ContentComponent implements OnInit {
       console.log(zip_code);
       this._sepomexService.getZipCode(zip_code).subscribe(
         result => {
-          this.data = result.zip_codes;
-          console.log(result.zip_codes);
+          this.dataSource.data = result.zip_codes;
+          console.log(result);
+          console.log("test : ", this.dataSource);
+          this.data = false;
         },
         error => {
           console.log(<any>error);
@@ -68,14 +79,18 @@ export class ContentComponent implements OnInit {
       console.log(auxstate,auxmun,state.trim(),municipality)
       this._sepomexService.getData(auxstate[1],auxmun[1]).subscribe(
         result =>{
-          this.data = result.zip_codes;
-          console.log(result.zip_codes);
+          this.dataSource.data = result.zip_codes;
+          console.log(result);
+          console.log("test : ", this.dataSource.data);
+          this.data = false;
         },
         error =>{
           console.log(<any>error);
         }
       )
     }
+    console.log("daaata ", this.dataSource);
+    this.dataSource.paginator = this.paginator;
     
   }
   getErrorMessage() {
@@ -89,9 +104,6 @@ export class ContentComponent implements OnInit {
   }
 
   clean(){
-    this.municipalities = [];
-    this.hideRequired = false;
-    this.data = undefined;
-    this.val = '';
+    this.data = true;
   }
 }
